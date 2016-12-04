@@ -33,6 +33,80 @@
 extern "C" {
 #endif
 
+/*********************************************************************
+ * Function:      CVREFOpen(config)
+ *
+ * Description:   Configures CVREF
+ *
+ * PreCondition:  None
+ *
+ * Inputs:      Desired configuration - see below
+ *
+ * Output:        None
+ *
+ * Example:   CVREFOpen( CVREF_ENABLE | CVREF_OUTPUT_ENABLE | CVREF_RANGE_HIGH | CVREF_SOURCE_AVDD | CVREF_STEP_15 )
+ *
+ ********************************************************************/
+#define CVREFOpen(config) (CVRCON = (config))
+
+    /****************************************
+     * Available options for config parameter
+     ****************************************/
+        // CVRef mode select - values are mutually exclusive
+        #define CVREF_ENABLE            (1 << _CVRCON_ON_POSITION)
+        #define CVREF_DISABLE           (0)
+
+        // CVRef output control - values are mutually exclusive
+        #define CVREF_OUTPUT_ENABLE     (1 << _CVRCON_CVROE_POSITION)
+        #define CVREF_OUTPUT_DISABLE    (0)
+
+        // CVRef range control - values are mutually exclusive
+        #define CVREF_RANGE_HIGH        (0)
+        #define CVREF_RANGE_LOW         (1 << _CVRCON_CVRR_POSITION)
+
+        // CVRef Reference source select - values are mutually exclusive
+        #define CVREF_SOURCE_AVDD       (0)
+        #define CVREF_SOURCE_VREF       (1 << _CVRCON_CVRSS_POSITION)
+
+        // CVRef Output Voltage Select - values are mutually exclusive
+        #define CVREF_STEP_0            (0)
+        #define CVREF_STEP_1            (1 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_2            (2 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_3            (3 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_4            (4 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_5            (5 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_6            (6 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_7            (7 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_8            (8 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_9            (9 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_10           (10 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_11           (11 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_12           (12 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_13           (13 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_14           (14 << _CVRCON_CVR_POSITION)
+        #define CVREF_STEP_15           (15 << _CVRCON_CVR_POSITION)
+    /****************************************
+     * End config1 parameter values
+     ****************************************/
+
+
+
+/*********************************************************************
+ * Function:      CVREFClose()
+ *
+ * Description:   Disables CVREF
+ *
+ * PreCondition:  None
+ *
+ * Inputs:        None
+ *
+ * Output:        None
+ *
+ * Example:       CVREFClose()
+ *
+ ********************************************************************/
+#define CVREFClose()    (CVRCONCLR = _CVRCON_ON_MASK)
+
 
 #ifdef	__cplusplus
 }

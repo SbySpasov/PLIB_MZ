@@ -19,5 +19,14 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 0.1.1 ***
+-Add aditional definitions of the names of functions.
+-Change of the functions names in "nvm.h".
+-Change of the code in "uart.h" of the function "UARTSetDataRate". 
+Now is with auto config of BRG bit. 
+-Add new functions in "osc.h". Improve the code.
+-Minor changes to other files.
+-Chanve wersionname in "verinfo.txt".
+
 *** 0.1.0 ***
 - First release

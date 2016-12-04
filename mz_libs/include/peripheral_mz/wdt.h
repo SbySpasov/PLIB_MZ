@@ -33,6 +33,115 @@
 extern "C" {
 #endif
 
+/*********************************************************************
+ * Function:        EnableWDT()
+ *
+ * Description:     Enables the WDT
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         EnableWDT()
+ *
+ ********************************************************************/
+#define EnableWDT() (WDTCONSET = _WDTCON_ON_MASK)
+
+
+/*********************************************************************
+ * Function:        DisableWDT()
+ *
+ * Description:     Disables the WDT
+ *
+ * PreCondition:    WDT must not be enabled by the device configuration
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         DisableWDT()
+ *
+ ********************************************************************/
+#define DisableWDT() (WDTCONCLR = _WDTCON_ON_MASK)
+
+
+/*********************************************************************
+ * Function:        ClearWDT()
+ *
+ * Description:     Resets the WDT
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         ClearWDT()
+ *
+ ********************************************************************/
+extern inline void __attribute__ ((always_inline)) __attribute__((optimize("-O0"))) 
+ClearWDT( void )
+{
+    volatile uint16_t * wdt_clrkey;
+
+    /* get address of upper 16-bit word of the WDTCON SFR */
+    wdt_clrkey = ( (volatile uint16_t *)&WDTCON ) + 1;
+    *wdt_clrkey = 0x5743;
+}
+
+
+/*********************************************************************
+ * Function:        ClearEventWDT()
+ *
+ * Description:     Clears the WDT event bit
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         ClearEventWDT()
+ *
+ ********************************************************************/
+#define ClearEventWDT() ( RCONCLR = _RCON_WDTO_MASK)
+
+
+/*********************************************************************
+ * Function:        ReadEventWDT()
+ *
+ * Description:     Returns the state of the WDT event bit
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          State of the WDT event bit
+ *
+ * Example:         ReadEventWDT()
+ *
+ ********************************************************************/
+#define ReadEventWDT() (RCONbits.WDTO)
+
+
+/*********************************************************************
+ * Function:        ReadPostscalerWDT()
+ *
+ * Description:     Returns the WDT prescaler value
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          The WDT Postscaler value
+ *
+ * Example:         ReadPostscalerWDT()
+ *
+ ********************************************************************/
+#define ReadPostscalerWDT()  (WDTCONbits.RUNDIV)
+
 
 #ifdef	__cplusplus
 }

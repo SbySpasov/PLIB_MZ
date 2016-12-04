@@ -35,6 +35,51 @@ extern "C" {
 #endif
 
 
+/*********************************************************************
+ * Function:        PowerSaveSleep()
+ *
+ * Description:     Sets Powersave mode to Sleep and enters Sleep mode
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         PowerSaveSleep()
+ *
+ ********************************************************************/
+void  extern inline __attribute__((nomips16,nomicromips,always_inline)) 
+PowerSaveSleep(void)
+{
+ 	mSysUnlockOpLock((OSCCONSET = (1 << _OSCCON_SLPEN_POSITION)));
+    asm volatile("WAIT");
+}
+
+
+
+/*********************************************************************
+ * Function:        PowerSaveIdle()
+ *
+ * Description:     Sets Powersave mode to Idle and enters Idle mode
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          None
+ *
+ * Example:         PowerSaveIdle()
+ *
+ ********************************************************************/
+void  extern inline __attribute__((nomips16,nomicromips,always_inline))  
+PowerSaveIdle(void)
+{
+ 	mSysUnlockOpLock((OSCCONCLR = (1 << _OSCCON_SLPEN_POSITION)));
+    asm volatile("WAIT");
+}
+
+
 #ifdef	__cplusplus
 }
 #endif

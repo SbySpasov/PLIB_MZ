@@ -5,6 +5,10 @@ X = In progress, some work done.
 ? = Not sure if worth the effort or useful at all.
 N = Decided against.
 
+
+Version 0.1.1
+
+
 Version 0.1.0
 X Support for peripherial of PIC32MZ EF devices.
 X ADC12 driver implementation for PIC32MZ EF devices.
