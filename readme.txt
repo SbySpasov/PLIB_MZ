@@ -18,6 +18,9 @@
 *****************************************************************************
 *** Releases                                                              ***
 *****************************************************************************
+*** 0.1.2 ***
+-Improve NVM function for write and erase.
+-Add optional aditional elements for synchronization with external NVM drivers.
 
 *** 0.1.1 ***
 -Add aditional definitions of the names of functions.

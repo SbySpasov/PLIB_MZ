@@ -640,24 +640,10 @@ int dma_susp; // storage for current DMA state
 //#pragma GCC optimize 0
 extern __inline__ BOOL __attribute__((nomicromips, always_inline)) __attribute__((optimize("-O0")))
 _NVMIsPageBlankLLD( void* address )
-//_NVMIsPageBlank( unsigned int address )
 {
     BOOL result = TRUE;
     unsigned int i;
-#if 0    
-    int *addr = PA_TO_KVA1(address & (~NVM_PAGE_SIZE + 1));
-    int *endaddr = (addr + NVM_PAGE_SIZE);
-    BOOL result = TRUE;
 
-    while( (result == TRUE) && (addr < endaddr) )
-    {
-        if( 0xFFFFFFFF != *addr )    
-        {
-            result = FALSE;
-        }
-        addr++;
-    }
-#else
     volatile unsigned int *faddress;
     faddress = (volatile unsigned int *)PA_TO_KVA1((KVA_TO_PA(address) & (~NVM_PAGE_SIZE + 1)));
     
@@ -669,9 +655,30 @@ _NVMIsPageBlankLLD( void* address )
             break;
         }
     }
-    
-#endif    
     return result;
+}
+
+/*********************************************************************
+ * Function:        unsigned int NVMClearErrorLLD(void)
+ *
+ * Description:     If the NVMCON error flag is set, it can only be cleared
+ *                  by performing an NVM NOP opertion.
+ *
+ * PreCondition:    None
+ *
+ * Inputs:          None
+ *
+ * Output:          '0' if operation completed successfully.
+ *
+ * Example:         NMVClearErrorLLD()
+ ********************************************************************/
+extern __inline__ unsigned int __attribute__((always_inline))
+NVMClearErrorLLD( void )
+{
+    unsigned int res; 
+    
+    res = _NVMOperationLLD(NO_OPERATION);
+    return res;
 }
 
 /*********************************************************************
@@ -695,16 +702,41 @@ NVMWriteWordLLD( void* address, unsigned int data )
 {
     unsigned int res;
     unsigned int addr = _DRV_NVM_KVA_TO_PA((unsigned int)address);
-
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO    
+    uint32_t processorStatus;   
+    BOOL nvm_inten_flag = FALSE;
+    BOOL usb_inten_flag = FALSE;
+#endif  
+    
     if( CFGCONbits.ECCCON < DEVCON_ECC_DISABLED_LOCKED )
     {
        return 1;                // Error unsupported mode for Word write op. 
     }
-    
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO
+    processorStatus = INTDisableInterrupts();
+    nvm_inten_flag = mFCEGetIntEnable();
+    usb_inten_flag = IEC4bits.USBIE;
+    mFCEIntEnable(FALSE);        
+    IEC4bits.USBDMAIE = 0;
+    IEC4bits.USBIE = 0;
+#endif    
+    if( mNVMIsErrorLLD() )
+    {
+        res = NVMClearErrorLLD();
+    }
     NVMToModifyFlashAddressLLD(addr);
     NVMProvideFlashDataLLD(data);
-    res = _NVMOperationLLD(WORD_PROGRAM_OPERATION);  
-    
+    res = _NVMOperationLLD(WORD_PROGRAM_OPERATION); 
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO    
+    mFCEClearIntFlag();
+    if(nvm_inten_flag) mFCEIntEnable(TRUE);
+    if(nvm_inten_flag)
+    {
+        IEC4bits.USBIE = 1;     
+        IEC4bits.USBDMAIE = 1;
+    }
+    INTRestoreInterrupts(processorStatus);
+#endif    
     return res;
 }
 
@@ -729,12 +761,39 @@ NVMWriteQuadWordLLD( void* address, unsigned int* data )
 {
     unsigned int res = 0;
     unsigned int addr = _DRV_NVM_KVA_TO_PA((unsigned int)address);
-
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO    
+    uint32_t processorStatus;   
+    BOOL nvm_inten_flag = FALSE;
+    BOOL usb_inten_flag = FALSE;
+#endif  
+    
     if( NVMProvideExistsQuadDataLLD() )
     {
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO
+        processorStatus = INTDisableInterrupts();
+        nvm_inten_flag = mFCEGetIntEnable();
+        usb_inten_flag = IEC4bits.USBIE;
+        mFCEIntEnable(FALSE);        
+        IEC4bits.USBDMAIE = 0;
+        IEC4bits.USBIE = 0;
+#endif 
+        if( mNVMIsErrorLLD() )
+        {
+            res = NVMClearErrorLLD();
+        }
         NVMToModifyFlashAddressLLD(addr);
         NVMProvideFlashQuadDataLLD(data);
         res = _NVMOperationLLD(QUAD_WORD_PROGRAM_OPERATION);
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO        
+        mFCEClearIntFlag();
+        if(nvm_inten_flag) mFCEIntEnable(TRUE);
+        if(nvm_inten_flag)
+        {
+            IEC4bits.USBIE = 1;     
+            IEC4bits.USBDMAIE = 1;
+        }
+        INTRestoreInterrupts(processorStatus);
+#endif 
     }
     return res;
 }
@@ -761,11 +820,35 @@ NVMWriteRowLLD( void* address, void* data )
 {
     unsigned int res;
     unsigned int addr = _DRV_NVM_KVA_TO_PA((unsigned int)address);
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO    
+    uint32_t processorStatus;   
+    BOOL nvm_inten_flag = FALSE;
+    BOOL usb_inten_flag = FALSE;
 
+    processorStatus = INTDisableInterrupts();
+    nvm_inten_flag = mFCEGetIntEnable();
+    usb_inten_flag = IEC4bits.USBIE;
+    mFCEIntEnable(FALSE);        
+    IEC4bits.USBDMAIE = 0;
+    IEC4bits.USBIE = 0;
+#endif     
+    if( mNVMIsErrorLLD() )
+    {
+        res = NVMClearErrorLLD();
+    }
     NVMToModifyFlashAddressLLD(addr);
     NVMBlockDataSourceAddressLLD(_DRV_NVM_KVA_TO_PA((unsigned int)data));
     res = _NVMOperationLLD(ROW_PROGRAM_OPERATION);
-    
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO        
+    mFCEClearIntFlag();
+    if(nvm_inten_flag) mFCEIntEnable(TRUE);
+    if(nvm_inten_flag)
+    {
+        IEC4bits.USBIE = 1;     
+        IEC4bits.USBDMAIE = 1;
+    }
+    INTRestoreInterrupts(processorStatus);
+#endif     
     return res;
 }
 
@@ -785,16 +868,41 @@ NVMWriteRowLLD( void* address, void* data )
  *
  * Example:         NVMErasePageLLD((void*) 0xBD000000)
  ********************************************************************/
-extern __inline__ unsigned int __attribute__((always_inline))
+extern __inline__ unsigned int __attribute__((always_inline)) __attribute__((optimize("-O0")))
 NVMErasePageLLD( void* address )
 {
     unsigned int res = 0; 
-    
-//    if( ! _NVMIsPageBlank(_DRV_NVM_KVA_TO_PA((volatile unsigned int)address)))
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO    
+    uint32_t processorStatus;   
+    BOOL nvm_inten_flag = FALSE;
+    BOOL usb_inten_flag = FALSE;
+#endif    
     if( ! _NVMIsPageBlankLLD(address))    
     {
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO        
+        processorStatus = INTDisableInterrupts();
+        nvm_inten_flag = mFCEGetIntEnable();
+        usb_inten_flag = IEC4bits.USBIE;
+        mFCEIntEnable(FALSE);        
+        IEC4bits.USBDMAIE = 0;
+        IEC4bits.USBIE = 0;
+#endif        
+        if( mNVMIsErrorLLD() )
+        {
+            res = NVMClearErrorLLD();
+        }
         NVMToModifyFlashAddressLLD(_DRV_NVM_KVA_TO_PA((volatile unsigned int)address));
         res = _NVMOperationLLD(PAGE_ERASE_OPERATION);
+#ifdef NVM_USE_ADDITIONAL_SYNCHRO        
+        mFCEClearIntFlag();
+        if(nvm_inten_flag) mFCEIntEnable(TRUE);
+        if(nvm_inten_flag)
+        {
+            IEC4bits.USBIE = 1;     
+            IEC4bits.USBDMAIE = 1;
+        }
+        INTRestoreInterrupts(processorStatus);
+#endif        
     }
     return res;
 }
@@ -831,31 +939,12 @@ NVMFlashEraseLLD( NVM_FLASH_ERASE_REGION_TYPE region )
         return 1;
     }
     
+    if( mNVMIsErrorLLD() )
+    {
+        res = NVMClearErrorLLD();
+    }
     res = _NVMOperationLLD(mode);
 
-    return res;
-}
-
-/*********************************************************************
- * Function:        unsigned int NVMClearErrorLLD(void)
- *
- * Description:     If the NVMCON error flag is set, it can only be cleared
- *                  by performing an NVM NOP opertion.
- *
- * PreCondition:    None
- *
- * Inputs:          None
- *
- * Output:          '0' if operation completed successfully.
- *
- * Example:         NMVClearErrorLLD()
- ********************************************************************/
-extern __inline__ unsigned int __attribute__((always_inline))
-NVMClearErrorLLD( void )
-{
-    unsigned int res; 
-    
-    res = _NVMOperationLLD(NO_OPERATION);
     return res;
 }
 
@@ -931,6 +1020,10 @@ NVMProgramLLD( void * address, const void * data, unsigned int size, void* pageb
 			data    += numLeftInPage;
         }
 
+        if( mNVMIsErrorLLD() )
+        {
+            res = NVMClearErrorLLD();
+        }
         // Erase the Page
         res = NVMErasePageLLD((void *)pageStartAddr);
         if(res) return res;
@@ -954,4 +1047,3 @@ NVMProgramLLD( void * address, const void * data, unsigned int size, void* pageb
 #endif
 
 #endif	/* NVM_H */
-
