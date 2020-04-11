@@ -5,6 +5,8 @@ X = In progress, some work done.
 ? = Not sure if worth the effort or useful at all.
 N = Decided against.
 
+Version 0.1.4
+
 Version 0.1.3
 
 Version 0.1.2
@@ -40,5 +42,5 @@ X INT driver implementation for PIC32MZ EF devices.
 * WDT driver implementation for PIC32MZ EF devices.
 * RTCC driver implementation for PIC32MZ EF devices.
 - ETH driver implementation for PIC32MZ EF devices.
-- CAN driver implementation for PIC32MZ EF devices.
+* CAN driver implementation for PIC32MZ EF devices.
 - SQI driver implementation for PIC32MZ EF devices.

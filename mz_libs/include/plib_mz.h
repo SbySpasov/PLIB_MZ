@@ -2,9 +2,9 @@
 		FileName: plib_mz.h
 */
 /*
-    plib_mz for PIC32MZ microcontrollers - Copyright (C) 2016-2019
+    plib_mz for PIC32MZ microcontrollers - Copyright (C) 2016-2020
                                             Spas Spasov.
-
+                                            spasov_bisav@yahoo.com
     This file is part of plib_mz.
 
     "plib_mz" is free software; you can redistribute it and/or modify
@@ -61,9 +61,9 @@ extern "C" {
 #include "peripheral_mz/rtcc.h"
 #include "peripheral_mz/uart.h"
 #include "peripheral_mz/wdt.h"
-//#include "peripheral/eth.h"
-//#include "peripheral/can.h"
-//#include "peripheral/sqi.h"
+#include "peripheral_mz/can.h"
+//#include "peripheral_mz/eth.h"
+//#include "peripheral_mz/sqi.h"
 #else
 #error "Device not supported by the plib_mz peripheral library"
 #endif

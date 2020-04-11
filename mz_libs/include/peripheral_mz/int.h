@@ -2156,6 +2156,62 @@ extern "C" {
 #define mDMA7GetIntSubPriority()                (IPC35bits.DMA7IS)
 #endif    
     
+
+/*********************************************************************
+ * <combinewith mCAN1ClearIntFlag, mCAN1GetIntFlag, mCAN1GetIntEnable, mCAN1SetIntPriority,
+ * mCAN1GetIntPriority, mCAN1SetIntSubPriority, mCAN1GetIntSubPriority,
+ * mCAN2ClearIntFlag, mCAN2GetIntFlag, mCAN2GetIntEnable, mCAN2IntEnable,
+ * mCAN2SetIntPriority, mCAN2SetIntSubPriority, mCAN2GetIntSubPriority>
+ *
+ * Control Area Network - CAN Interrrupt Contol Funtions
+ *
+ * Function:        void    mCANxClearIntFlag(void)
+ *                  int     mCANxGetIntFlag(void)
+ *                  void    mCANxIntEnable(void)
+ *                  int     mCANxGetIntEnable(void)
+ *                  void    mCANxSetIntPriority(int priority)
+ *                  int     mCANxGetIntPriority(void)
+ *                  void    mCANxSetIntSubPriority(subPriority)
+ *                  int     mCANxGetIntSubPriority(void)
+ *
+ * PreCondition:    EBASE and IntCtl.VS set up
+ *
+ * Inputs:          priority:       A value between 0 - 7 inclusive.
+ *                  subPriority:    A value between 0 - 3 inclusive
+ *
+ * Output:          For 'Get' functions, the returned values are of
+ *                  same type as 'Set' functions.
+ *
+ * Side Effects:    None
+ *
+ * Overview:        None
+ ********************************************************************/
+/*********************************************************************
+ * CAN 1
+ ********************************************************************/
+#ifdef _CAN1
+#define mCAN1ClearIntFlag()                 (IFS4CLR = _IFS4_CAN1IF_MASK)
+#define mCAN1GetIntFlag()                   (IFS4bits.CAN1IF)
+#define mCAN1GetIntEnable()                 (IEC4bits.CAN1IE)
+#define mCAN1IntEnable(enable)              (IEC4CLR = _IEC4_CAN1IE_MASK, IEC4SET = ((enable) << _IEC4_CAN1IE_POSITION))
+#define mCAN1SetIntPriority(priority)       (IPC37CLR = _IPC37_CAN1IP_MASK, IPC37SET = ((priority) << _IPC37_CAN1IP_POSITION))
+#define mCAN1GetIntPriority()               (IPC37bits.CAN1IP)
+#define mCAN1SetIntSubPriority(subPriority) (IPC37CLR = _IPC37_CAN1IS_MASK, IPC37SET = ((subPriority) << _IPC37_CAN1IS_POSITION))
+#define mCAN1GetIntSubPriority()            (IPC37bits.CAN1IS)
+#endif
+/*********************************************************************
+ * CAN 2
+ ********************************************************************/
+#ifdef _CAN2
+#define mCAN2ClearIntFlag()                 (IFS4CLR = _IFS4_CAN2IF_MASK)
+#define mCAN2GetIntFlag()                   (IFS4bits.CAN2IF)
+#define mCAN2GetIntEnable()                 (IEC4bits.CAN2IE)
+#define mCAN2IntEnable(enable)              (IEC4CLR = _IEC4_CAN2IE_MASK, IEC4SET = ((enable) << _IEC4_CAN2IE_POSITION))
+#define mCAN2SetIntPriority(priority)       (IPC38CLR = _IPC38_CAN2IP_MASK, IPC38SET = ((priority) << _IPC38_CAN2IP_POSITION))
+#define mCAN2GetIntPriority()               (IPC38bits.CAN2IP)
+#define mCAN2SetIntSubPriority(subPriority) (IPC38CLR = _IPC38_CAN2IS_MASK, IPC38SET = ((subPriority) << _IPC38_CAN2IS_POSITION))
+#define mCAN2GetIntSubPriority()            (IPC38bits.CAN2IS)
+#endif
     
     
 // *****************************************************************************
