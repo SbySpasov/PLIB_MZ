@@ -18,6 +18,8 @@
 *****************************************************************************
 *** Releases                                                              ***
 *****************************************************************************
+*** 0.1.3 ***
+-Added low-level driver for RTCC
 *** 0.1.2 ***
 -Improve NVM function for write and erase.
 -Add optional aditional elements for synchronization with external NVM drivers.

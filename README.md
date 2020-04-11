@@ -14,6 +14,10 @@ No need of instalation.
 
 Searching for Contributors.
 
+## email
+
+spasov_bisav@yahoo.com
+
 ## License
 
 GNU General Public License

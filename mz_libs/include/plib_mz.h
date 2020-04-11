@@ -2,7 +2,7 @@
 		FileName: plib_mz.h
 */
 /*
-    plib_mz for PIC32MZ microcontrollers - Copyright (C) 2016
+    plib_mz for PIC32MZ microcontrollers - Copyright (C) 2016-2019
                                             Spas Spasov.
 
     This file is part of plib_mz.
@@ -55,10 +55,10 @@ extern "C" {
 #include "peripheral_mz/pps.h"
 #include "peripheral_mz/power.h"
 #include "peripheral_mz/reset.h"
-//#include "peripheral/rtcc.h"
 #include "peripheral_mz/spi.h"
 #include "peripheral_mz/system.h"
 #include "peripheral_mz/timer.h"
+#include "peripheral_mz/rtcc.h"
 #include "peripheral_mz/uart.h"
 #include "peripheral_mz/wdt.h"
 //#include "peripheral/eth.h"
